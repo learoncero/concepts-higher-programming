@@ -1,39 +1,35 @@
-#include "linkedList.h"
+#include "linkedListGen.h"
 #include <stdio.h>
 #include <stdlib.h>
 
 
 
-linkedListInt_node_t* linkedListInt_createNode(int data) {
-    linkedListInt_node_t* pNewNode = (linkedListInt_node_t*)malloc(sizeof(linkedListInt_node_t));
+linkedListGen_node_t* linkedListGen_createNode(size_t size) {
+    linkedListGen_node_t* pNewNode = malloc(size);
 
     if (pNewNode == NULL) {
         return NULL;
     }
 
-    pNewNode->data = data;
     pNewNode->pNext = NULL;
 
     return pNewNode;
 }
 
-int linkedListInt_insertAtFirst(linkedListInt_node_t** pHead, int data) {
-    linkedListInt_node_t* pNewNode = linkedListInt_createNode(data);
+int linkedListGen_insertAtFirst(linkedListGen_node_t** pHead, linkedListGen_node_t* pNewNode) {
     pNewNode->pNext = *pHead;
     *pHead = pNewNode;
 
     return 0;
 }
 
-int linkedListInt_insertAtEnd(linkedListInt_node_t** pHead, int data) {
-    linkedListInt_node_t* pNewNode = linkedListInt_createNode(data);
-
+int linkedListGen_insertAtEnd(linkedListGen_node_t** pHead, linkedListGen_node_t* pNewNode) {
     if (*pHead == NULL) {
         *pHead = pNewNode;
         return 0;
     }
 
-    linkedListInt_node_t* pTemp = *pHead;
+    linkedListGen_node_t* pTemp = *pHead;
     while (pTemp->pNext != NULL) {
         pTemp = pTemp->pNext;
     }
@@ -42,15 +38,13 @@ int linkedListInt_insertAtEnd(linkedListInt_node_t** pHead, int data) {
     return 0;
 }
 
-int linkedListInt_insertAtPosition(linkedListInt_node_t** pHead, int data, int position) {
-    linkedListInt_node_t* pNewNode = linkedListInt_createNode(data);
-
+int linkedListGen_insertAtPosition(linkedListGen_node_t** pHead, linkedListGen_node_t* pNewNode, int position) {
     if (position == 0) {
-        linkedListInt_insertAtFirst(pHead, data);
+        linkedListGen_insertAtFirst(pHead, pNewNode);
         return 0;
     }
 
-    linkedListInt_node_t* pTemp = *pHead;
+    linkedListGen_node_t* pTemp = *pHead;
     int i = 0;
 
     while ((pTemp->pNext != NULL) && (i < position - 1)) {
@@ -70,27 +64,27 @@ int linkedListInt_insertAtPosition(linkedListInt_node_t** pHead, int data, int p
     return 0;
 }
 
-int linkedListInt_deleteFromFirst(linkedListInt_node_t** pHead) {
+int linkedListGen_deleteFromFirst(linkedListGen_node_t** pHead) {
     if (*pHead == NULL) {
         printf("List is empty.\n");
         return -1;
     }
 
-    linkedListInt_node_t* pTemp = *pHead;
+    linkedListGen_node_t* pTemp = *pHead;
     *pHead = pTemp->pNext;
     free(pTemp);
 
     return 0;
 }
 
-int linkedListInt_deleteFromEnd(linkedListInt_node_t** pHead) {
+int linkedListGen_deleteFromEnd(linkedListGen_node_t** pHead) {
     if (*pHead == NULL) {
         printf("List is empty");
         return -1;
     }
 
     // list has only one entry
-    linkedListInt_node_t* pTemp = *pHead;
+    linkedListGen_node_t* pTemp = *pHead;
     if (pTemp->pNext == NULL) {
         free(pTemp);
         *pHead = NULL;
@@ -107,15 +101,15 @@ int linkedListInt_deleteFromEnd(linkedListInt_node_t** pHead) {
     return 0;
 }
 
-int linkedListInt_deleteAtPosition(linkedListInt_node_t** pHead, int position) {
+int linkedListGen_deleteAtPosition(linkedListGen_node_t** pHead, int position) {
     if (*pHead == NULL) {
         printf("List is empty.\n");
         return -1;
     }
 
-    linkedListInt_node_t* pTemp = *pHead;
+    linkedListGen_node_t* pTemp = *pHead;
     if (position == 0) {
-        linkedListInt_deleteFromFirst(pHead);
+        linkedListGen_deleteFromFirst(pHead);
         return 0;
     }
 
@@ -130,14 +124,15 @@ int linkedListInt_deleteAtPosition(linkedListInt_node_t** pHead, int position) {
         return -1;
     }
 
-    linkedListInt_node_t* pToDelete = pTemp->pNext;
+    linkedListGen_node_t* pToDelete = pTemp->pNext;
     pTemp->pNext = pToDelete->pNext;
     free(pToDelete);
 
     return 0;
 }
 
-int linkedListInt_forEach(linkedListInt_node_t* pHead, int (*func) (int)) {
+
+int linkedListGen_forEach(linkedListGen_node_t* pHead, int (*func) (int)) {
     if (pHead == NULL) {
         printf("List is empty.\n");
         return 0;
@@ -146,19 +141,33 @@ int linkedListInt_forEach(linkedListInt_node_t* pHead, int (*func) (int)) {
     int i = 0;
 
     while (pHead != NULL) {
-        pHead->data = func(pHead->data);
-        i += 1;
+        if (pHead->type == INT_NODE) {
+            linkedListGen_intNode_t* pIntNode = (linkedListGen_intNode_t*)pHead;
+            pIntNode->data = func(pIntNode->data);
+            i += 1;
+        }
         pHead = pHead->pNext;
     }
 
     return i;
 }
 
-int linkedListInt_printAll(linkedListInt_node_t* pHead) {
-    linkedListInt_node_t* current = pHead;
-    while (current != NULL) {
-        printf("%d -> ", current->data);
-        current = current->pNext;
+
+int linkedListGen_printAll(linkedListGen_node_t* pHead) {
+    while (pHead != NULL) {
+        if (pHead->type == INT_NODE) {
+            linkedListGen_intNode_t* pIntNode = (linkedListGen_intNode_t*)pHead;
+            printf("%d -> ", pIntNode->data);
+        }
+        else if (pHead->type == DOUBLE_NODE) {
+            linkedListGen_doubleNode_t* pDoubleNode = (linkedListGen_doubleNode_t*)pHead;
+            printf("%f -> ", pDoubleNode->data);
+        }
+        else if (pHead->type == STRING_NODE) {
+            linkedListGen_stringNode_t* pStringNode = (linkedListGen_stringNode_t*)pHead;
+            printf("%s -> ", pStringNode->data);
+        }
+        pHead = pHead->pNext;
     }
     printf("NULL\n");
 

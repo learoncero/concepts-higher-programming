@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "linkedList.h"
+#include "linkedListInt.h"
 
 int doubleValue(int x) {
     return x * 2;
@@ -10,7 +10,7 @@ int addTen(int x) {
     return x + 10;
 }
 
-int main(void) {
+int main(int argc, char* argv[]) {
     linkedListInt_node_t* head = NULL;   // start with an empty list
 
     linkedListInt_insertAtFirst(&head, 10);

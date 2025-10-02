@@ -1,0 +1,38 @@
+#ifndef LINKED_LIST_GEN_H__
+#define LINKED_LIST_GEN_H__
+
+#include <stddef.h>
+
+typedef enum { INT_NODE, DOUBLE_NODE, STRING_NODE } NodeType;
+
+typedef struct node {
+    struct node* pNext;
+    NodeType type;
+} linkedListGen_node_t;
+
+typedef struct intNode {
+    linkedListGen_node_t base;
+    int data;
+} linkedListGen_intNode_t;
+
+typedef struct doubleNode {
+    linkedListGen_node_t base;
+    double data;
+} linkedListGen_doubleNode_t;
+
+typedef struct stringNode {
+    linkedListGen_node_t base;
+    char* data;
+} linkedListGen_stringNode_t;
+
+linkedListGen_node_t* linkedListGen_createNode(size_t size);
+int linkedListGen_insertAtFirst(linkedListGen_node_t** pHead, linkedListGen_node_t* pNewNode);
+int linkedListGen_insertAtEnd(linkedListGen_node_t** pHead, linkedListGen_node_t* pNewNode);
+int linkedListGen_insertAtPosition(linkedListGen_node_t** pHead, linkedListGen_node_t* pNewNode, int position);
+int linkedListGen_deleteFromFirst(linkedListGen_node_t** pHead);
+int linkedListGen_deleteFromEnd(linkedListGen_node_t** pHead);
+int linkedListGen_deleteAtPosition(linkedListGen_node_t** pHead, int position);
+int linkedListGen_printAll(linkedListGen_node_t* pHead);
+int linkedListGen_forEach(linkedListGen_node_t* pHead, int (*func) (int));
+
+#endif#pragma once
