@@ -1,18 +1,19 @@
-#ifndef LIST_H_
-#define LIST_H_
+#ifndef LINKED_LIST_INT_H__
+#define LINKED_LIST_INT_H__
 
 typedef struct node {
     int data;
     struct node* pNext;
-} node_t;
+} linkedListInt_node_t;
 
-node_t* linkedList_createNode(int data);
-int linkedList_insertAtFirst(node_t** pHead, int data);
-int linkedList_insertAtEnd(node_t** pHead, int data);
-int linkedList_insertAtPosition(node_t** pHead, int data, int position);
-int linkedList_deleteFromFirst(node_t** pHead);
-int linkedList_deleteFromEnd(node_t** pHead);
-int linkedList_deleteAtPosition(node_t** pHead, int position);
-int linkedList_print(node_t* pHead);
+linkedListInt_node_t* linkedListInt_createNode(int data);
+int linkedListInt_insertAtFirst(linkedListInt_node_t** pHead, int data);
+int linkedListInt_insertAtEnd(linkedListInt_node_t** pHead, int data);
+int linkedListInt_insertAtPosition(linkedListInt_node_t** pHead, int data, int position);
+int linkedListInt_deleteFromFirst(linkedListInt_node_t** pHead);
+int linkedListInt_deleteFromEnd(linkedListInt_node_t** pHead);
+int linkedListInt_deleteAtPosition(linkedListInt_node_t** pHead, int position);
+int linkedListInt_printAll(linkedListInt_node_t* pHead);
+int linkedListInt_forEach(linkedListInt_node_t* pHead, int (*func) (int));
 
 #endif
