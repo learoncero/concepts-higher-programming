@@ -2,8 +2,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-
 linkedListGen_node_t* linkedListGen_createNode(size_t size) {
     linkedListGen_node_t* pNewNode = malloc(size);
 
@@ -132,44 +130,21 @@ int linkedListGen_deleteAtPosition(linkedListGen_node_t** pHead, int position) {
 }
 
 
-int linkedListGen_forEach(linkedListGen_node_t* pHead, int (*func) (int)) {
+int linkedListGen_forEach(linkedListGen_node_t* pHead, callbackFunc_t callback) {
     if (pHead == NULL) {
         printf("List is empty.\n");
         return 0;
     }
 
-    int i = 0;
+    int count = 0;
+    linkedListGen_node_t* current = pHead;
 
-    while (pHead != NULL) {
-        if (pHead->type == INT_NODE) {
-            linkedListGen_intNode_t* pIntNode = (linkedListGen_intNode_t*)pHead;
-            pIntNode->data = func(pIntNode->data);
-            i += 1;
-        }
-        pHead = pHead->pNext;
+    while (current != NULL) {
+        callback(current);
+        count += 1;
+        current = current->pNext;
     }
 
-    return i;
+    return count;
 }
 
-
-int linkedListGen_printAll(linkedListGen_node_t* pHead) {
-    while (pHead != NULL) {
-        if (pHead->type == INT_NODE) {
-            linkedListGen_intNode_t* pIntNode = (linkedListGen_intNode_t*)pHead;
-            printf("%d -> ", pIntNode->data);
-        }
-        else if (pHead->type == DOUBLE_NODE) {
-            linkedListGen_doubleNode_t* pDoubleNode = (linkedListGen_doubleNode_t*)pHead;
-            printf("%f -> ", pDoubleNode->data);
-        }
-        else if (pHead->type == STRING_NODE) {
-            linkedListGen_stringNode_t* pStringNode = (linkedListGen_stringNode_t*)pHead;
-            printf("%s -> ", pStringNode->data);
-        }
-        pHead = pHead->pNext;
-    }
-    printf("NULL\n");
-
-    return 0;
-}

@@ -3,11 +3,8 @@
 
 #include <stddef.h>
 
-typedef enum { INT_NODE, DOUBLE_NODE, STRING_NODE } NodeType;
-
 typedef struct node {
     struct node* pNext;
-    NodeType type;
 } linkedListGen_node_t;
 
 typedef struct intNode {
@@ -25,6 +22,8 @@ typedef struct stringNode {
     char* data;
 } linkedListGen_stringNode_t;
 
+typedef void (*callbackFunc_t)(linkedListGen_node_t*);
+
 linkedListGen_node_t* linkedListGen_createNode(size_t size);
 int linkedListGen_insertAtFirst(linkedListGen_node_t** pHead, linkedListGen_node_t* pNewNode);
 int linkedListGen_insertAtEnd(linkedListGen_node_t** pHead, linkedListGen_node_t* pNewNode);
@@ -32,7 +31,6 @@ int linkedListGen_insertAtPosition(linkedListGen_node_t** pHead, linkedListGen_n
 int linkedListGen_deleteFromFirst(linkedListGen_node_t** pHead);
 int linkedListGen_deleteFromEnd(linkedListGen_node_t** pHead);
 int linkedListGen_deleteAtPosition(linkedListGen_node_t** pHead, int position);
-int linkedListGen_printAll(linkedListGen_node_t* pHead);
-int linkedListGen_forEach(linkedListGen_node_t* pHead, int (*func) (int));
+int linkedListGen_forEach(linkedListGen_node_t* pHead, callbackFunc_t callback);
 
 #endif#pragma once
