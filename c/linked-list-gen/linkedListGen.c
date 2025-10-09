@@ -137,12 +137,12 @@ int linkedListGen_forEach(linkedListGen_node_t* pHead, callbackFunc_t callback) 
     }
 
     int count = 0;
-    linkedListGen_node_t* current = pHead;
+    linkedListGen_node_t* pCurrent = pHead;
 
-    while (current != NULL) {
-        callback(current);
+    while (pCurrent != NULL) {
+        callback(pCurrent);
         count += 1;
-        current = current->pNext;
+        pCurrent = pCurrent->pNext;
     }
 
     return count;
