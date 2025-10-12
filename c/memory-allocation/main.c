@@ -59,18 +59,18 @@ int main(int argc, char* argv[]) {
     }
     
     // Test 5: Free memory and test reallocation
-    printf("\nTest 5: Free first allocation\n");
-    if (address1) {
-        int freedSize = heapManager_free(address1);
-        printf("Freed %d bytes from address: %p\n", freedSize, address1);
-        address1 = NULL; // Avoid dangling pointer
-    }
-    
-    printf("\nTest 6: Free second allocation\n");
+    printf("\nTest 5: Free second allocation\n");
     if (address2) {
         int freedSize = heapManager_free(address2);
         printf("Freed %d bytes from address: %p\n", freedSize, address2);
         address2 = NULL; // Avoid dangling pointer
+    }
+
+    printf("\nTest 6: Free first allocation\n");
+    if (address1) {
+        int freedSize = heapManager_free(address1);
+        printf("Freed %d bytes from address: %p\n", freedSize, address1);
+        address1 = NULL; // Avoid dangling pointer
     }
     
     // Test 7: Try to allocate after freeing

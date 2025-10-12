@@ -5,7 +5,7 @@
 #define HEAP_SIZE 4096
 
 // heap structure: [Header1][data........][Header2][data........][Header3][data........]
-static unsigned char heap[HEAP_SIZE] = {0xAF, 0xFE};
+static unsigned char heap[HEAP_SIZE];
 
 static heapManager_heapBlockHeader_t* pFreeList = NULL;
 
@@ -64,7 +64,7 @@ int heapManager_free(unsigned char* address) {
 	heapManager_heapBlockHeader_t* pNext = (heapManager_heapBlockHeader_t*)
 		((unsigned char*)pHeaderToFree + (sizeof(heapManager_heapBlockHeader_t) + pHeaderToFree->size));
 
-	while ((unsigned char*)(pNext < heapEnd) && (pNext->free == 1)) {
+	while ((unsigned char*)pNext < heapEnd && pNext->free == 1) {
 		pHeaderToFree->size += sizeof(heapManager_heapBlockHeader_t) + pNext->size;
 
 		// go to the next header block
