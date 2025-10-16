@@ -5,13 +5,13 @@
 
 int main(int argc, char* argv[]) {
     // Initialize heap
-    heapManager_init();
+    //heapManager_init();
     
     printf("=== Heap Manager Tests ===\n");
     
     // Test 1: Simple allocation
     printf("Test 1: Allocate 4 bytes\n");
-    unsigned char* address1 = (unsigned char*)heapManager_alloc(4);
+    unsigned char* address1 = (unsigned char*)heapManager_alloc(2);
     if (address1) {
         printf("Successfully allocated at address: %p\n", address1);
         // Write test data

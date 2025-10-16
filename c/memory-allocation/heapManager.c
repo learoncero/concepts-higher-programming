@@ -1,49 +1,75 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "heapManager.h"
 
-#define HEAP_SIZE 4096
+// Helper macros to extract bytes from a value (little-endian)
+#define BYTE0(x) ((uint8_t)((x) & 0xFF))
+#define BYTE1(x) ((uint8_t)(((x) >> 8) & 0xFF))
+#define BYTE2(x) ((uint8_t)(((x) >> 16) & 0xFF))
+#define BYTE3(x) ((uint8_t)(((x) >> 24) & 0xFF))
+#define BYTE4(x) ((uint8_t)(((x) >> 32) & 0xFF))
+#define BYTE5(x) ((uint8_t)(((x) >> 40) & 0xFF))
+#define BYTE6(x) ((uint8_t)(((x) >> 48) & 0xFF))
+#define BYTE7(x) ((uint8_t)(((x) >> 56) & 0xFF))
+
+#define ALIGNMENT 4
+#define ALIGN(size) (((size) + (ALIGNMENT - 1)) & ~(ALIGNMENT - 1))
+#define INITIAL_SIZE (HEAP_SIZE - sizeof(heapManager_heapBlockHeader_t))
+#define INITIAL_FREE 1
+
+#if (HEAP_SIZE % ALIGNMENT) != 0
+#error "HEAP_SIZE must be a multiple of 4"
+#endif
+
 
 // heap structure: [Header1][data........][Header2][data........][Header3][data........]
-static unsigned char heap[HEAP_SIZE];
+static uint8_t gHeap[HEAP_SIZE] = {
+	// size_t size (8 bytes, little-endian)
+	BYTE0(INITIAL_SIZE), BYTE1(INITIAL_SIZE), BYTE2(INITIAL_SIZE), BYTE3(INITIAL_SIZE),
+	BYTE4(INITIAL_SIZE), BYTE5(INITIAL_SIZE), BYTE6(INITIAL_SIZE), BYTE7(INITIAL_SIZE),
+	// uint8_t free (1 byte)
+	INITIAL_FREE
+};
 
-static heapManager_heapBlockHeader_t* pFreeList = NULL;
-
-void heapManager_init() {
-	pFreeList = (heapManager_heapBlockHeader_t*)heap;
-	pFreeList->size = HEAP_SIZE - sizeof(heapManager_heapBlockHeader_t);
-	pFreeList->free = 1;
-}
+//void heapManager_init() {
+//	heapManager_heapBlockHeader_t* initialHeader = (heapManager_heapBlockHeader_t*)gHeap;
+//	initialHeader->size = HEAP_SIZE - sizeof(heapManager_heapBlockHeader_t);
+//	initialHeader->free = 1;
+//}
 
 void* heapManager_alloc(size_t size) {
-	heapManager_heapBlockHeader_t* pCurrent = pFreeList;
-	unsigned char* heapEnd = heap + HEAP_SIZE;
+	// Align the requested size to ALIGNMENT bytes
+	size_t alignedSize = ALIGN(size);
 
-	while (pCurrent != NULL && (unsigned char*)pCurrent < heapEnd) {
-		if ((pCurrent->free) && (pCurrent->size >= size)) {
+	heapManager_heapBlockHeader_t* pCurrent = gHeap;
+	uint8_t* pHeapEnd = gHeap + HEAP_SIZE;
+
+	while (pCurrent != NULL && (uint8_t*)pCurrent < pHeapEnd) {
+		if ((pCurrent->free) && (pCurrent->size >= alignedSize)) {
 			// heap block is exactly the size needed
-			if (pCurrent->size > size + sizeof(heapManager_heapBlockHeader_t)){
+			if (pCurrent->size > alignedSize + sizeof(heapManager_heapBlockHeader_t)) {
 				// split the free heap block
 				heapManager_heapBlockHeader_t* pNewHeaderBlock = (heapManager_heapBlockHeader_t*)
-					((unsigned char*)pCurrent 
-					+ sizeof(heapManager_heapBlockHeader_t) 
-					+ size);
-				pNewHeaderBlock->size = pCurrent->size - size - sizeof(heapManager_heapBlockHeader_t);
+					((uint8_t*)pCurrent
+						+ sizeof(heapManager_heapBlockHeader_t)
+						+ alignedSize);
+				pNewHeaderBlock->size = pCurrent->size - alignedSize - sizeof(heapManager_heapBlockHeader_t);
 				pNewHeaderBlock->free = 1;
-				pCurrent->size = size;
+				pCurrent->size = alignedSize;
 			}
 			pCurrent->free = 0;
-			return (unsigned char*)pCurrent + sizeof(heapManager_heapBlockHeader_t);
+			return (uint8_t*)pCurrent + sizeof(heapManager_heapBlockHeader_t);
 		}
 
 		// go to the next header block
-		pCurrent = (heapManager_heapBlockHeader_t*)((unsigned char*)pCurrent + (sizeof(heapManager_heapBlockHeader_t) + pCurrent->size));
+		pCurrent = (heapManager_heapBlockHeader_t*)((uint8_t*)pCurrent + (sizeof(heapManager_heapBlockHeader_t) + pCurrent->size));
 	}
 
 	return NULL; // no suitable block found
 }
 
-int heapManager_free(unsigned char* address) {
+int heapManager_free(uint8_t* address) {
     if (address == NULL) {
         return 0;
     }
@@ -52,24 +78,24 @@ int heapManager_free(unsigned char* address) {
 		(address - sizeof(heapManager_heapBlockHeader_t));
     
     // check heap boundaries
-    unsigned char* heapStart = heap;
-    unsigned char* heapEnd = heap + HEAP_SIZE;
+    uint8_t* heapStart = gHeap;
+    uint8_t* heapEnd = gHeap + HEAP_SIZE;
 
-    if ((unsigned char*)pHeaderToFree < heapStart || (unsigned char*)pHeaderToFree >= heapEnd) {
+    if ((uint8_t*)pHeaderToFree < heapStart || (uint8_t*)pHeaderToFree >= heapEnd) {
         return 0; // address not valid
     }
 
 	pHeaderToFree->free = 1;
 
 	heapManager_heapBlockHeader_t* pNext = (heapManager_heapBlockHeader_t*)
-		((unsigned char*)pHeaderToFree + (sizeof(heapManager_heapBlockHeader_t) + pHeaderToFree->size));
+		((uint8_t*)pHeaderToFree + (sizeof(heapManager_heapBlockHeader_t) + pHeaderToFree->size));
 
-	while ((unsigned char*)pNext < heapEnd && pNext->free == 1) {
+	while ((uint8_t*)pNext < heapEnd && pNext->free == 1) {
 		pHeaderToFree->size += sizeof(heapManager_heapBlockHeader_t) + pNext->size;
 
 		// go to the next header block
 		pNext = (heapManager_heapBlockHeader_t*)
-			((unsigned char*)pHeaderToFree + (sizeof(heapManager_heapBlockHeader_t) + pHeaderToFree->size));
+			((uint8_t*)pHeaderToFree + (sizeof(heapManager_heapBlockHeader_t) + pHeaderToFree->size));
 	}
 
 	return pHeaderToFree->size;
