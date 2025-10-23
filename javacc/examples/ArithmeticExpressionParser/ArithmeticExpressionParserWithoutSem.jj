@@ -1,0 +1,53 @@
+PARSER_BEGIN(ArithmeticExpressionParserWithoutSem)
+
+import java.io.*;
+
+public class ArithmeticExpressionParserWithoutSem {
+    public static void main(String[] args) throws ParseException, Exception {
+        ArithmeticExpressionParserWithoutSem parser = new ArithmeticExpressionParserWithoutSem(new FileInputStream(args[0]));
+        parser.Expr();
+        System.out.println("Parsing successful!");
+    }
+}
+PARSER_END(ArithmeticExpressionParserWithoutSem)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+TOKEN :
+{
+    < PLUS: "+" > |
+    < MINUS: "-" > |
+    < MULT: "*" > |
+    < DIV: "/" > |
+    < POW: "**" > |
+    < LPAREN: "(" > |
+    < RPAREN: ")" > |
+    < ASSIGN: "=" > |
+    < NUM: (["0"-"9"])+ >
+}
+
+// grammar rules
+void Expr() :
+{
+}
+{
+    Term() ( ( <PLUS> | <MINUS> ) Term() )*
+}
+
+void Term() :
+{}
+{
+    Factor() ( ( <MULT> | <DIV> ) Factor() )*
+}
+
+void Factor() :
+{}
+{
+    <NUM> | <LPAREN> Expr() <RPAREN>
+}

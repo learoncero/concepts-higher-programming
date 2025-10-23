@@ -1,0 +1,77 @@
+PARSER_BEGIN(ArithmeticExpressionParser)
+
+import java.io.*;
+
+public class ArithmeticExpressionParser {
+    public static void main(String[] args) throws ParseException, Exception {
+        ArithmeticExpressionParser parser = new ArithmeticExpressionParser(new FileInputStream(args[0]));
+        int result = parser.Expr();
+        System.out.println("Parsing successful!");
+        System.out.println("Result = " + result);
+    }
+}
+PARSER_END(ArithmeticExpressionParser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+TOKEN :
+{
+    < PLUS: "+" > |
+    < MINUS: "-" > |
+    < MULT: "*" > |
+    < DIV: "/" > |
+    < POW: "**" > |
+    < LPAREN: "(" > |
+    < RPAREN: ")" > |
+    < ASSIGN: "=" > |
+    < NUM: (["0"-"9"])+ >
+}
+
+// grammar rules
+int Expr() :
+{
+    int op1;
+    int op2;
+    Token operator;
+}
+{
+    op1 = Term()
+    (
+        operator = <PLUS>  op2 = Term() { op1 = op1 + op2; }
+      | operator = <MINUS> op2 = Term() { op1 = op1 - op2; }
+      | operator = <DIV> op2 = Term() { op1 = op1 / op2; }
+    )*
+    { return op1; }
+}
+
+int Term() :
+{
+    int op1;
+    int op2;
+}
+{
+    op1 = Factor()
+    (
+        <MULT> op2 = Factor() { op1 = op1 * op2; }
+    )*
+    { return op1; }
+}
+
+int Factor() :
+{
+    Token t;
+    int value;
+}
+{
+    (
+        t=<NUM> { value = Integer.parseInt(t.image); }
+      | <LPAREN> value=Expr() <RPAREN>
+    )
+    { return value; }
+}
