@@ -3,5 +3,6 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
+  <Project Path="Fractional/Fractional.vcxproj" Id="21db14d1-89e3-4843-8798-b65684cc58bf" />
   <Project Path="Stack/Stack.vcxproj" Id="87ce13bb-73d9-4e99-b016-010c17d2a8b2" />
 </Solution>
