@@ -8,6 +8,7 @@ using namespace std;
 
 class Fractional {
 	friend ostream& operator<<(ostream&, const Fractional&);
+	friend Fractional operator+(const Fractional& lhs, const Fractional& rhs);
 
 private:
 	int _numerator;
