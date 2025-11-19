@@ -5,4 +5,5 @@
   </Configurations>
   <Project Path="Fractional/Fractional.vcxproj" Id="21db14d1-89e3-4843-8798-b65684cc58bf" />
   <Project Path="Stack/Stack.vcxproj" Id="87ce13bb-73d9-4e99-b016-010c17d2a8b2" />
+  <Project Path="Stack_Extended/Stack_Extended.vcxproj" Id="29aa661e-f6f8-4a23-b119-216713d1c641" />
 </Solution>
