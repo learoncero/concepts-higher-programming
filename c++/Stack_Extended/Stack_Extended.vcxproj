@@ -24,6 +24,7 @@
     <ProjectGuid>{29aa661e-f6f8-4a23-b119-216713d1c641}</ProjectGuid>
     <RootNamespace>StackExtended</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>Stack_Inheritance</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
