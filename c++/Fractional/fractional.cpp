@@ -5,16 +5,27 @@ Fractional::Fractional(int numerator, int denominator) {
 	_denominator = denominator;
 }
 
+Fractional::Fractional(double value) {
+	// Convert double to fraction by multiplying by 1000000 to preserve precision
+	// This handles decimals like 1.5 -> 1500000/1000000 -> simplified to 3/2
+	const int precision = 1000000;
+	_numerator = static_cast<int>(value * precision);
+	_denominator = precision;
+	simplify();
+}
+
 ostream& operator<<(ostream& os, const Fractional& Fractional) {
 	os << Fractional._numerator << "/" << Fractional._denominator;
 	return os;
 }
 
 Fractional operator+(const Fractional& lhs, const Fractional& rhs) {
-	int numerator_result = lhs._numerator * rhs._denominator + rhs._numerator * lhs._denominator;
-	int denominator_result = lhs._denominator * rhs._denominator;
-
-	Fractional result(numerator_result, denominator_result);
+	// Cross-multiply to add fractions: a/b + c/d = (a*d + b*c) / (b*d)
+	int newNumerator = lhs._numerator * rhs._denominator + rhs._numerator * lhs._denominator;
+	int newDenominator = lhs._denominator * rhs._denominator;
+	
+	Fractional result(newNumerator, newDenominator);
+	result.simplify();
 	return result;
 }
 
